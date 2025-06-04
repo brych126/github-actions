@@ -1,15 +1,18 @@
 name: Context testing
-on: push
+on: workflow_dispatch
 
 jobs:
   dump_contexts_to_log:
     runs-on: ubuntu-latest
     steps:
-      - name: Use env var in run
+      - name: print workspace 1
         env:
-          MY_ENV_VAR: HelloWorld
+          MY_WORKSPACE1: ${{github.workspace}}
         run: |
-          echo "Value is: ${{ env.MY_ENV_VAR }}"
+          echo "Value is: $MY_WORKSPACE1"
+      - name: print workspace 2
+        run: |
+          echo "Value is: ${{ github.workspace }}"
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
