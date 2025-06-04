@@ -5,7 +5,6 @@ jobs:
   dump_contexts_to_log:
     runs-on: ubuntu-latest
     steps:
-    steps:
       - name: Use env var in run
         env:
           MY_ENV_VAR: HelloWorld
