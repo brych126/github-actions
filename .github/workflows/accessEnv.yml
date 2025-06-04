@@ -1,0 +1,15 @@
+name: Example how to access env variable
+on: workflow_dispatch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GREETING: Hello
+    steps:
+      - name: Interpolation by GitHub
+        run: echo "${{ env.GREETING }} World"  # GitHub does interpolation
+
+      - name: Interpolation by Shell
+        run: |
+          echo "GREETING=$GREETING"           # Shell does interpolation
