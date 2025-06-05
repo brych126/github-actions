@@ -10,3 +10,19 @@ jobs:
       - name: Pass or fail
         run: |
           if [[ ${{ steps.generate_number.outputs.random_number }} == 0 ]]; then exit 0; else exit 1; fi
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with logs
+        run: |
+          mkdir ${{ runner.temp }}/build_logs
+          echo "Logs from building" > ${{ runner.temp }}/build_logs/build.logs
+          exit 1
+      - name: Upload logs on fail
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build failure logs
+          path: ${{ runner.temp }}/build_logs
