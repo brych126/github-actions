@@ -7,9 +7,20 @@ jobs:
     env:
       GREETING: Hello
     steps:
-      - name: Interpolation by GitHub
+      - name: Interpolation by GitHub {1}
         run: echo "${{ env.GREETING }} World"  # GitHub does interpolation
 
-      - name: Interpolation by Shell
+      - name: Interpolation by Shell {1}
+        run: |
+          echo "GREETING=$GREETING"           # Shell does interpolation
+
+      - name: Change env variable
+        run: |
+          echo "GREETING=changed_hello" >> $GITHUB_ENV
+
+      - name: Interpolation by GitHub {2}
+        run: echo "${{ env.GREETING }} World"  # GitHub does interpolation
+
+      - name: Interpolation by Shell {2}
         run: |
           echo "GREETING=$GREETING"           # Shell does interpolation
