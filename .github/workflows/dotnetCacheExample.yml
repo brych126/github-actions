@@ -1,0 +1,41 @@
+name: Dotnet Cache Example
+
+on:
+  push:
+    paths:
+      - 'RestSharpExample/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./RestSharpExample
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('ReRestSharpExample.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build
+
+      - name: Run
+        run: dotnet run
