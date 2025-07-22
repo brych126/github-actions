@@ -1,0 +1,31 @@
+name: Job Output Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  set-output-correctly:
+    runs-on: ubuntu-latest
+    outputs:
+      correct_version: ${{ steps.setver.outputs.version }}
+    steps:
+      - id: setver
+        run: echo "version=1.2.3" >> $GITHUB_OUTPUT
+
+  set-output-via-env:
+    runs-on: ubuntu-latest
+    env:
+      version: 9.9.9
+    outputs:
+      wrong_version: ${{ env.version }}  # ❌ This won't work for outputs
+    steps:
+      - run: echo "Env version is ${{ env.version }}"
+
+  compare:
+    needs: [set-output-correctly, set-output-via-env]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print job outputs
+        run: |
+          echo "✅ Correct version: ${{ needs.set-output-correctly.outputs.correct_version }}"
+          echo "❌ Wrong version:   ${{ needs.set-output-via-env.outputs.wrong_version }}"
