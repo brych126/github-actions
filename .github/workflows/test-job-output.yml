@@ -1,4 +1,4 @@
-name: Job Output Test
+name: Job Output Test Extended
 
 on:
   workflow_dispatch:
@@ -12,20 +12,30 @@ jobs:
       - id: setver
         run: echo "version=1.2.3" >> $GITHUB_OUTPUT
 
-  set-output-via-env:
+  set-output-via-env-job-level:
     runs-on: ubuntu-latest
     env:
       version: 9.9.9
     outputs:
-      wrong_version: ${{ env.version }}  # ❌ This won't work for outputs
+      job_env_version: ${{ env.version }}
     steps:
-      - run: echo "Env version is ${{ env.version }}"
+      - run: echo "Job-level env version is ${{ env.version }}"
+
+  set-output-via-env-step-level:
+    runs-on: ubuntu-latest
+    outputs:
+      step_env_version: ${{ env.version }}
+    steps:
+      - name: Set env variable via GITHUB_ENV
+        run: echo "version=7.7.7" >> $GITHUB_ENV
+      - run: echo "Step-level env version is ${{ env.version }}"
 
   compare:
-    needs: [set-output-correctly, set-output-via-env]
+    needs: [set-output-correctly, set-output-via-env-job-level, set-output-via-env-step-level]
     runs-on: ubuntu-latest
     steps:
-      - name: Print job outputs
+      - name: Compare outputs
         run: |
-          echo "✅ Correct version: ${{ needs.set-output-correctly.outputs.correct_version }}"
-          echo "❌ Wrong version:   ${{ needs.set-output-via-env.outputs.wrong_version }}"
+          echo "✅ Correct (step output): ${{ needs.set-output-correctly.outputs.correct_version }}"
+          echo "✅ Job-level env:          ${{ needs.set-output-via-env-job-level.outputs.job_env_version }}"
+          echo "❌ Step-level env:         '${{ needs.set-output-via-env-step-level.outputs.step_env_version }}' (expected empty)"
