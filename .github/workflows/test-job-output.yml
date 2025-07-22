@@ -36,6 +36,6 @@ jobs:
     steps:
       - name: Compare outputs
         run: |
-          echo "✅ Correct (step output): ${{ needs.set-output-correctly.outputs.correct_version }}"
-          echo "✅ Job-level env:          ${{ needs.set-output-via-env-job-level.outputs.job_env_version }}"
-          echo "❌ Step-level env:         '${{ needs.set-output-via-env-step-level.outputs.step_env_version }}' (expected empty)"
+          echo " Correct (step output): ${{ needs.set-output-correctly.outputs.correct_version }}"
+          echo " Job-level env:          ${{ needs.set-output-via-env-job-level.outputs.job_env_version }}"
+          echo " Step-level env:         ${{ needs.set-output-via-env-step-level.outputs.step_env_version }}"
