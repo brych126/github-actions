@@ -38,6 +38,7 @@ jobs:
         with:
           file: ./DockerGithubActionsSimpleExample/Dockerfile
           context: ./DockerGithubActionsSimpleExample
+          load: true
           tags: ${{ env.TEST_TAG }}
 
       - name: Inspect image
