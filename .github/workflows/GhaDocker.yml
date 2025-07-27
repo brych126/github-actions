@@ -34,6 +34,8 @@ jobs:
       - name: Build and export to Docker
         uses: docker/build-push-action@v6
         with:
+          file: ./DockerGithubActionsSimpleExample/Dockerfile
+          context: ./DockerGithubActionsSimpleExample
           load: true
           tags: ${{ env.TEST_TAG }}
 
@@ -48,6 +50,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          file: ./DockerGithubActionsSimpleExample/Dockerfile
+          context: ./DockerGithubActionsSimpleExample
           push: true
           tags: ${{ steps.meta.outputs.tags }}
