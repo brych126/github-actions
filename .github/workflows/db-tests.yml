@@ -6,7 +6,20 @@ on:
 jobs:
   db-tests:
     runs-on: ubuntu-latest
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: "Password1"
+        options: >-
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q 'SELECT 1' -C"
+          --health-interval=30s
+          --health-timeout=10s
+          --health-retries=3
 
     steps:
-      - name: Check for sqlcmd (pre-check)
-        run: command -v sqlcmd || echo "sqlcmd not found"
+      - name: Docker containers
+        run: docker ps
