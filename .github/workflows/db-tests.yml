@@ -42,5 +42,6 @@ jobs:
 
       - name: Check mounted dir
         run: |
-         docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /
-         docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /scripts
+          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") cat /scripts/CreateDbStructure.sql
+          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /
+          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /scripts
