@@ -27,9 +27,13 @@ jobs:
          docker ps --format "{{.Names}}"
          docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest"
 
+      - name: ls_1
+        run: |
+         ls -R ${{ github.workspace }}
+
       - uses: actions/checkout@v4
 
-      - name: ls
+      - name: ls_2
         run: |
          ls -R ${{ github.workspace }}
 
