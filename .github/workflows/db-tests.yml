@@ -29,7 +29,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-    steps:
       - name: ls
         run: |
          ls -R ${{ github.workspace }}
