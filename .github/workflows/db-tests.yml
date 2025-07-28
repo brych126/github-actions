@@ -33,15 +33,18 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: ls_2
+        run: |
+         ls -l -R ${{ github.workspace }}
+
       - name: Copy scripts to mounted temp folder
         run: cp -r ./DatabaseTests/scripts temp
 
-      - name: ls_2
+      - name: ls_3
         run: |
          ls -l -R ${{ github.workspace }}
 
       - name: Check mounted dir
         run: |
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") cat /scripts/CreateDbStructure.sql
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /scripts
+          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /
+          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /scripts
