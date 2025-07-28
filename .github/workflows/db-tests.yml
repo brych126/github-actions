@@ -41,4 +41,6 @@ jobs:
          ls -l -R ${{ github.workspace }}
 
       - name: Check mounted dir
-        run: docker exec -i $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /scripts
+        run: |
+         docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /
+         docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls /scripts
