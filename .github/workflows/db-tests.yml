@@ -6,48 +6,61 @@ on:
 jobs:
   db-tests:
     runs-on: ubuntu-latest
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-          - 1433:1433
-        env:
-          ACCEPT_EULA: "Y"
-          SA_PASSWORD: "Password1"
-        options: >-
-          -v ${{runner.temp}}/scripts:/scripts:ro
-          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q 'SELECT 1' -C"
-          --health-interval=30s
-          --health-timeout=10s
-          --health-retries=3
+    # services:
+    #   mssql:
+    #     image: mcr.microsoft.com/mssql/server:2022-latest
+    #     ports:
+    #       - 1433:1433
+    #     env:
+    #       ACCEPT_EULA: "Y"
+    #       SA_PASSWORD: "Password1"
+    #     options: >-
+    #       -v ${{runner.temp}}/scripts:/scripts:ro
+    #       --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q 'SELECT 1' -C"
+    #       --health-interval=30s
+    #       --health-timeout=10s
+    #       --health-retries=3
 
     steps:
-      - name: print ${{runner.temp}}
-        run: printenv RUNNER_TEMP
-
-      - name: List docker containers
-        run: |
-         docker ps --format "{{.Names}}"
-         docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest"
+      # - name: List docker containers
+      #   run: |
+      #    docker ps --format "{{.Names}}"
+      #    docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest"
 
       - name: ls_1
         run: |
-         ls -l -R $RUNNER_TEMP
+         ls -l -R ${{github.workspace}}
 
-      - uses: actions/checkout@v4
+      - name: mkdir before checkout
+        run: |
+         mkdir test_dir
 
       - name: ls_2
         run: |
-         ls -l -R $RUNNER_TEMP
+         ls -l -R ${{github.workspace}}
 
-      - name: Copy scripts to mounted temp folder
-        run: cp -r ./DatabaseTests/scripts $RUNNER_TEMP/scripts
+      - uses: actions/checkout@v4
+        with:
+          path: gha
 
       - name: ls_3
         run: |
-         ls -l -R $RUNNER_TEMP
+         ls -l -R ${{github.workspace}}
 
-      - name: Check mounted dir
-        run: |
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /scripts
+      # - uses: actions/checkout@v4
+
+      # - name: ls_2
+      #   run: |
+      #    ls -l -R $RUNNER_TEMP
+
+      # - name: Copy scripts to mounted temp folder
+      #   run: cp -r ./DatabaseTests/scripts $RUNNER_TEMP/scripts
+
+      # - name: ls_3
+      #   run: |
+      #    ls -l -R $RUNNER_TEMP
+
+      # - name: Check mounted dir
+      #   run: |
+      #     docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /
+      #     docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /scripts
