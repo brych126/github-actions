@@ -15,7 +15,7 @@ jobs:
           ACCEPT_EULA: "Y"
           SA_PASSWORD: "Password1"
         options: >-
-          -v ${{ github.workspace }}/temp:/scripts:ro
+          -v $RUNNER_TEMP/scripts:/scripts:ro
           --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q 'SELECT 1' -C"
           --health-interval=30s
           --health-timeout=10s
@@ -29,20 +29,20 @@ jobs:
 
       - name: ls_1
         run: |
-         ls -l -R ${{ github.workspace }}
+         ls -l -R $RUNNER_TEMP
 
       - uses: actions/checkout@v4
 
       - name: ls_2
         run: |
-         ls -l -R ${{ github.workspace }}
+         ls -l -R $RUNNER_TEMP
 
       - name: Copy scripts to mounted temp folder
-        run: cp -r ./DatabaseTests/scripts temp
+        run: cp -r ./DatabaseTests/scripts $RUNNER_TEMP/scripts
 
       - name: ls_3
         run: |
-         ls -l -R ${{ github.workspace }}
+         ls -l -R $RUNNER_TEMP
 
       - name: Check mounted dir
         run: |
