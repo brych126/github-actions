@@ -22,7 +22,7 @@ jobs:
     #       --health-retries=3
 
     steps:
-      - name: print {{runner.temp}}
+      - name: print ${{runner.temp}}
         run: printenv RUNNER_TEMP
 
       - name: List docker containers
