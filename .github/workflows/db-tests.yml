@@ -47,6 +47,10 @@ jobs:
         run: |
          ls -l -R ${{github.workspace}}
 
+      - name: pwd
+        run: |
+         pwd
+
       # - uses: actions/checkout@v4
 
       # - name: ls_2
