@@ -40,7 +40,7 @@ jobs:
          ls -l -R ${{ github.workspace }}
 
       - name: Copy scripts to mounted folder
-        run: cp -r ./gha/DatabaseTests/scripts gha/scripts
+        run: cp -r ./gha/DatabaseTests/scripts ./scripts
 
       - name: ls_3
         run: |
