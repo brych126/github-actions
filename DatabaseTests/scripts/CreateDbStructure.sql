@@ -15,7 +15,7 @@ BEGIN
     DROP TABLE dbo.TestTable;
 END
 
-CREATE TABLE dbo.TestTable (
+CREAT TABLE dbo.TestTable (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(100),
     CreatedAt DATETIME DEFAULT GETUTCDATE()

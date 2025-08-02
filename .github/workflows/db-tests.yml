@@ -2,6 +2,9 @@ name: Run DB Integration Tests
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'DatabaseTests/**'
 
 jobs:
   db-tests:
@@ -72,7 +75,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-db-tests-nuget-${{ hashFiles('DatabaseTestsAdoNet/DatabaseTestsAdoNet.csproj') }}
+          key: ${{ runner.os }}-db-tests-nuget-${{ hashFiles('DatabaseTests/DatabaseTestsAdoNet/DatabaseTestsAdoNet.csproj') }}
           restore-keys: |
             ${{ runner.os }}-db-tests-nuget-
 
