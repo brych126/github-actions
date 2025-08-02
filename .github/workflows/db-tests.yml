@@ -88,4 +88,4 @@ jobs:
         run: dotnet build ./DatabaseTestsAdoNet
 
       - name: Run db tests
-        run: dotnet test --logger ./DatabaseTestsAdoNet
+        run: dotnet test --logger "console;verbosity=detailed" ./DatabaseTestsAdoNet
