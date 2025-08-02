@@ -40,7 +40,7 @@ jobs:
          sql_ready=false
       
           for i in {1..30}; do
-            docker exec sql_server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password1 -Q "SELECT 1" && {
+            docker exec sql_server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password1 -Q "SELECT 1" -C && {
               sql_ready=true
               break
             }
