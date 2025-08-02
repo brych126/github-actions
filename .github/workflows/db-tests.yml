@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        shell: bash
         working-directory: DatabaseTests
 
     steps:
@@ -60,16 +61,22 @@ jobs:
           fi
           
           echo "✅ SQL Server is ready"
-        shell: bash
 
       - name: Run DB init script
         run: |
-          docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
+          if docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
             -S localhost \
             -U sa \
             -P Password1 \
             -i /scripts/CreateDbStructure.sql \
-            -C
+            -C; then
+
+            echo "✅ Database initialization script executed successfully"
+      
+          else
+            echo "❌ Failed to run database initialization script"
+            exit 1
+          fi
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
