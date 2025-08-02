@@ -6,47 +6,69 @@ on:
 jobs:
   db-tests:
     runs-on: ubuntu-latest
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-          - 1433:1433
-        env:
-          ACCEPT_EULA: "Y"
-          SA_PASSWORD: "Password1"
-        options: >-
-          -v ${{ github.workspace }}/scripts:/scripts:ro
-          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q 'SELECT 1' -C"
-          --health-interval=30s
-          --health-timeout=10s
-          --health-retries=3
+    defaults:
+      run:
+        working-directory: DatabaseTests
 
     steps:
-      - name: List docker containers
-        run: |
-         docker ps --format "{{.Names}}"
-         docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest"
-
-      - name: ls_1
-        run: |
-         ls -l -R ${{ github.workspace }}
-
       - uses: actions/checkout@v4
+      
+      - name: Ls
+        run: |
+         pwd
+         ls -l -R .
+         echo "**********"
+         ls- l -R ${{github.workspace}}
+
+      - name: List docker info
+        run: |
+         docker version
+         docker compose version
+
+      - name: Start SQL Server
+        run: |
+          docker run -d \
+            --name sql_server \
+            -e "ACCEPT_EULA=Y" \
+            -e "SA_PASSWORD=Password1" \
+            -v "./scripts:/scripts:ro" \
+            -p 1433:1433 \
+            mcr.microsoft.com/mssql/server:2022-latest
+
+      - name: Wait for SQL Server to be ready
+        run: |
+          for i in {1..30}; do
+            docker exec sql_server /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password1 -Q "SELECT 1" && break
+            echo "Waiting for SQL Server..."
+            sleep 2
+          done
+
+      - name: Run DB init script
+        run: |
+          docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
+            -S localhost \
+            -U sa \
+            -P YourStrongPassword123 \
+            -i /scripts/CreateDbStructure.sql
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
         with:
-          path: gha
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-db-tests-nuget-${{ hashFiles('DatabaseTestsAdoNet/DatabaseTestsAdoNet.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-db-tests-nuget-
 
-      - name: ls_2
-        run: |
-         ls -l -R ${{ github.workspace }}
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-      - name: Copy scripts to mounted folder
-        run: cp -r ./gha/DatabaseTests/scripts ./scripts
+      - name: Restore dependencies
+        run: dotnet restore ./DatabaseTestsAdoNet
 
-      - name: ls_3
-        run: |
-         ls -l -R ${{ github.workspace }}
+      - name: Build
+        run: dotnet build ./DatabaseTestsAdoNet
 
-      - name: Check mounted dir
-        run: |
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /
-          docker exec -u root $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") ls -l /scripts
+      - name: Run db tests
+        run: dotnet test --logger ./DatabaseTestsAdoNet
