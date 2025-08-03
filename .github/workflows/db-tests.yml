@@ -19,6 +19,7 @@ jobs:
       
       - name: Ls
         run: |
+         id
          pwd
          ls -l -R .
          echo "**********"
@@ -31,11 +32,16 @@ jobs:
 
       - name: Start SQL Server
         run: |
+          #Prepare mount dir with limited access
+          mkdir init_output
+          chmod 700 init_output
+
           docker run -d \
             --name sql_server \
             -e "ACCEPT_EULA=Y" \
             -e "SA_PASSWORD=Password1" \
             -v "./scripts:/scripts:ro" \
+            -v "./init_output:/init_output" \
             -p 1433:1433 \
             mcr.microsoft.com/mssql/server:2022-latest
 
@@ -64,19 +70,27 @@ jobs:
 
       - name: Run DB init script
         run: |
-          if docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
+          # 1. Execute db init script
+          chmod 703 init_output
+          docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
             -S localhost \
             -U sa \
             -P Password1 \
             -i /scripts/CreateDbStructure.sql \
-            -C; then
+            -o /init_output/output.txt \
+            -C
+          chmod 700 init_output
 
-            echo "✅ Database initialization script executed successfully"
+          # 2. Print output
+          cat ./init_output/output.txt
       
-          else
-            echo "❌ Failed to run database initialization script"
+          # 3. Check for SQL errors
+          if grep -q "^Msg " ./init_output/output.txt; then
+            echo "❌ Database initialization script contains SQL errors"
             exit 1
           fi
+
+          echo "✅ Database initialization script executed successfully"
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
