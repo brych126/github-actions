@@ -102,3 +102,25 @@ jobs:
 
       - name: Run db tests
         run: dotnet test --logger "console;verbosity=detailed" ./DatabaseTestsAdoNet
+
+      - name: Collect logs and init output
+        if: always()
+        run: |
+          mkdir -p artifacts
+
+          echo "📥 Saving Docker logs from sql_server container..."
+          docker logs sql_server > artifacts/sql_server.log 2>&1 || echo "⚠️ Could not get docker logs"
+
+          echo "📥 Copying DB initialization output..."
+          if [ -f ./init_output/output.txt ]; then
+            cp ./init_output/output.txt artifacts/db_init_output.txt
+          else
+            echo "⚠️ DB init output not found" > artifacts/db_init_output.txt
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-debug-artifacts
+          path: artifacts/
