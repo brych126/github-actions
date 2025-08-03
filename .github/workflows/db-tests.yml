@@ -103,7 +103,7 @@ jobs:
       - name: Run db tests
         run: dotnet test --logger "console;verbosity=detailed" ./DatabaseTestsAdoNet
 
-      - name: Collect logs and init output
+      - name: Collect artifacts
         if: always()
         run: |
           mkdir -p artifacts
@@ -118,9 +118,11 @@ jobs:
             echo "⚠️ DB init output not found" > artifacts/db_init_output.txt
           fi
 
+          ls -l -R
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: db-debug-artifacts
-          path: artifacts/
+          path: ${{github.workspace}}/DatabaseTests/artifacts/
