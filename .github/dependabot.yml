@@ -6,3 +6,8 @@ updates:
     schedule:
       interval: "monthly" # or daily, monthly
     open-pull-requests-limit: 5
+  - package-ecosystem: "nuget"
+    directory: "/DatabaseTests/DatabaseTestsAdoNet"
+    schedule:
+      interval: "monthly" # or daily, monthly
+    open-pull-requests-limit: 5
