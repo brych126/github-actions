@@ -106,7 +106,7 @@ jobs:
       - name: Collect artifacts
         if: always()
         run: |
-          mkdir -p artifacts
+          mkdir artifacts
 
           echo "📥 Saving Docker logs from sql_server container..."
           docker logs sql_server > artifacts/sql_server.log 2>&1 || echo "⚠️ Could not get docker logs"
@@ -117,8 +117,6 @@ jobs:
           else
             echo "⚠️ DB init output not found" > artifacts/db_init_output.txt
           fi
-
-          ls -l -R
 
       - name: Upload artifacts
         if: always()
