@@ -16,19 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Ls
-        run: |
-         id
-         pwd
-         ls -l -R .
-         echo "**********"
-         ls -l -R ${{github.workspace}}
-
-      - name: List docker info
-        run: |
-         docker version
-         docker compose version
 
       - name: Start SQL Server
         run: |
@@ -70,7 +57,7 @@ jobs:
 
       - name: Run DB init script
         run: |
-          # 1. Execute db init script
+          echo "📄 Running DB initialization script and capturing output..."
           chmod 703 init_output
           docker exec sql_server /opt/mssql-tools18/bin/sqlcmd \
             -S localhost \
@@ -81,10 +68,12 @@ jobs:
             -C
           chmod 700 init_output
 
-          # 2. Print output
+          echo "📤 Output from sqlcmd:"
+          echo "────────────────────────────"
           cat ./init_output/output.txt
+          echo "────────────────────────────"
       
-          # 3. Check for SQL errors
+          echo "🔍 Checking for SQL errors..."
           if grep -q "^Msg " ./init_output/output.txt; then
             echo "❌ Database initialization script contains SQL errors"
             exit 1
